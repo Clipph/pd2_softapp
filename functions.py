@@ -62,6 +62,19 @@ def is_registered(id):
 def is_operating(id):
     response = api_call(method="GET", url=f"{API_URL}/device/{id}/", api_key=API_KEY)
     return response.json()["operating"]
+
+# This should be deleted in production. It is only for testing purposes
+# The operating parameter should only be modified by the mobile application
+def update_operating(id, operating):
+    data = {
+        "operating": operating
+    }
+    response = api_call(method="PATCH", url=f"{API_URL}/device/{id}/", data=data, api_key=API_KEY)
+    return response
+
+def check_status(id):
+    response = api_call(method="GET", url=f"{API_URL}/device/{id}/", api_key=API_KEY)
+    return response.json()["status"]
     
 def update_status(id, status):
     data = {
