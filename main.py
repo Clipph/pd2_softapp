@@ -9,7 +9,6 @@ def main():
     register_id = {"id": id} # This is the new id that will be registered
 
     data_update = { # This is the data that will be updated
-        "operating": True,
         "status": 1
     }
     # api = f.api_call(method="GET", url=f"{API_URL}/device/{id}/", api_key=API_KEY) -- this works
