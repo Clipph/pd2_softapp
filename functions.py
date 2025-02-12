@@ -3,6 +3,10 @@ import random
 import string
 import requests
 import json
+import main
+
+API_URL = main.API_URL
+API_KEY = main.API_KEY
 
 def random_id_generator(max_length=5):
     return ''.join(random.choices(string.ascii_letters + string.digits, k=max_length))
@@ -43,3 +47,26 @@ def api_call(method, url, data=None, params=None, api_key=None):
         return response
     else:
         raise ValueError("Invalid method")
+    
+# Checks if the id is already registered. If not, it will register it
+def is_registered(id):
+    register_id = {
+        "id": id
+    }
+    response = api_call(method="GET", url=f"{API_URL}/device/{id}/", api_key=API_KEY)
+    if response.status_code == 200:
+        return True
+    elif response.status_code == 404:
+        response = api_call(method="POST", url=f"{API_URL}/register_device/", data=register_id, api_key=API_KEY)
+        return False
+
+def is_operating(id):
+    response = api_call(method="GET", url=f"{API_URL}/device/{id}/", api_key=API_KEY)
+    return response.json()["operating"]
+    
+def update_status(id, status):
+    data = {
+        "status": status
+    }
+    response = api_call(method="PATCH", url=f"{API_URL}/device/{id}/", data=data, api_key=API_KEY)
+    return response
