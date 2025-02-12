@@ -6,6 +6,7 @@ API_KEY = "bd8e4d538dfa993960152da646"
 
 def main():
     id = f.get_id_from_file()
+    print("ID:", id)
 
     if f.is_registered(id):
         print("The id is already registered")
