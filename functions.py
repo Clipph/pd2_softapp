@@ -34,7 +34,6 @@ def api_call(method, url, data=None, params=None, api_key=None):
 
     if method == "GET": # Working
         response = requests.get(url, params=api_key_params)
-        print(response.request.url)
         return response
     elif method == "POST": # Working
         response = requests.post(url, data=data, headers=headers, params=api_key_params)
