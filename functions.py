@@ -9,9 +9,29 @@ API_URL = main.API_URL
 API_KEY = main.API_KEY
 
 def random_id_generator(max_length=5):
+    """
+    Generates a random string consisting of letters and digits with a maximum length
+    of 5 characters.
+
+    Args:
+        max_length (int): The maximum length of the string to generate. Defaults to 5.
+
+    Returns:
+        str: A random string of letters and digits with a maximum length of 5 characters.
+    """
+
     return ''.join(random.choices(string.ascii_letters + string.digits, k=max_length))
 
 def get_id_from_file():
+    """
+    Retrieves the ID from a file. If the file does not exist, generates a new random ID
+    and ensures it is unique by checking against a registration API. The new ID is then
+    saved to the file.
+
+    Returns:
+        str: The ID retrieved from the file or newly generated.
+    """
+
     try:
         with open("id.txt", "r") as f:
             return f.read()
@@ -30,6 +50,22 @@ def get_id_from_file():
     
 def api_call(method, url, data=None, api_key=None):
     # Converts data to JSON if it is not None
+    """
+    Makes an API call with the specified method, URL, and optional data and API key.
+
+    Args:
+        method (str): The HTTP method to use for the API call (GET, POST, PATCH, DELETE).
+        url (str): The URL endpoint for the API call.
+        data (dict, optional): The data to send with the API call, if applicable. Defaults to None.
+        api_key (str, optional): The API key for authentication. Defaults to None.
+
+    Returns:
+        requests.Response: The response object from the API call.
+
+    Raises:
+        ValueError: If an invalid HTTP method is provided.
+    """
+
     if data:
         data = json.dumps(data)
     
@@ -54,8 +90,16 @@ def api_call(method, url, data=None, api_key=None):
     else:
         raise ValueError("Invalid method")
     
-# Checks if the id is already registered. If not, it will register it
 def is_registered(id):
+    """
+    Checks if the id is already registered. If not, it will register it.
+
+    Args:
+        id (str): The id of the device.
+
+    Returns:
+        bool: True if the device is registered, False if not.
+    """
     register_id = {
         "id": id
     }
@@ -80,10 +124,31 @@ def update_operating(id, operating):
     return response
 
 def check_status(id):
+    """
+    Retrieves the status of a device with the given id.
+
+    Args:
+        id (str): The id of the device.
+
+    Returns:
+        int: The status of the device.
+    """
+
     response = api_call(method="GET", url=f"{API_URL}/device/{id}/", api_key=API_KEY)
     return response.json()["status"]
     
 def update_status(id, status):
+    """
+    Updates the status of a device with the given id.
+
+    Args:
+        id (str): The id of the device.
+        status (int): The status to update to.
+
+    Returns:
+        requests.Response: The response of the API call.
+    """
+
     data = {
         "status": status
     }
