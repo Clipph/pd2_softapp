@@ -7,6 +7,7 @@ import main
 import os
 import sys
 import time
+import detection
 
 API_URL = main.API_URL
 API_KEY = main.API_KEY
@@ -198,16 +199,16 @@ def print_status():
     print("Status: ", status)
 
 def weevil_detection():
-    result = True # boolean type if weevil is detected or not
     print("Detecting rice weevils...")
 
     # The detection process will be here
-    time.sleep(10)
+    result = detection.detect_rice_weevil()
 
     if result:
         update_status(ID, 1)
     else:
         update_status(ID, 4)
+        
 
 def weevil_attraction():
     print("Attracting rice weevils...")

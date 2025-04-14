@@ -21,7 +21,7 @@ def main():
     process = subprocess.Popen(["python", "process.py"])
 
     while(True):
-        if not f.is_operating(id):
+        if not f.is_operating(id) or f.check_status(id) == 4:
             break
 
         time.sleep(5)
