@@ -4,6 +4,9 @@ import string
 import requests
 import json
 import main
+import os
+import sys
+import time
 
 API_URL = main.API_URL
 API_KEY = main.API_KEY
@@ -47,6 +50,8 @@ def get_id_from_file():
         with open("id.txt", "w") as f:
             f.write(id)
         return id
+    
+ID = get_id_from_file()
     
 def api_call(method, url, data=None, api_key=None):
     # Converts data to JSON if it is not None
@@ -111,6 +116,15 @@ def is_registered(id):
         return False
 
 def is_operating(id):
+    """
+    Retrieves the operating status of a device with the given id.
+
+    Args:
+        id (str): The id of the device.
+
+    Returns:
+        bool: The operating status of the device.
+    """
     response = api_call(method="GET", url=f"{API_URL}/device/{id}/", api_key=API_KEY)
     return response.json()["operating"]
 
@@ -143,7 +157,13 @@ def update_status(id, status):
 
     Args:
         id (str): The id of the device.
-        status (int): The status to update to.
+        status (int): The status to update to:
+            0: Standby
+            1: Weevils found
+            2: Weevils attracted
+            3: Weevils eliminated
+            4: Weevils not found
+        
 
     Returns:
         requests.Response: The response of the API call.
@@ -154,3 +174,62 @@ def update_status(id, status):
     }
     response = api_call(method="PATCH", url=f"{API_URL}/device/{id}/", data=data, api_key=API_KEY)
     return response
+
+def clear_console():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+def print_status():
+    clear_console()
+    status = ""
+    print("ID: ", ID)
+    print("Operating: ", is_operating(ID))
+
+    if check_status(ID) == 0:
+        status = "Standby"
+    elif check_status(ID) == 1:
+        status = "Weevils found"
+    elif check_status(ID) == 2:
+        status = "Weevils attracted"
+    elif check_status(ID) == 3:
+        status = "Weevils eliminated"
+    elif check_status(ID) == 4:
+        status = "Weevils not found"
+
+    print("Status: ", status)
+
+def weevil_detection():
+    result = True # boolean type if weevil is detected or not
+    print("Detecting rice weevils...")
+
+    # The detection process will be here
+    time.sleep(10)
+
+    if result:
+        update_status(ID, 1)
+    else:
+        update_status(ID, 4)
+
+def weevil_attraction():
+    print("Attracting rice weevils...")
+    # Process here
+    time.sleep(10)
+    update_status(ID, 2)
+
+def weevil_elimination():
+    print("Eliminating rice weevils...")
+    # Process here
+    time.sleep(10)
+    update_status(ID, 3)
+
+def start_process():
+    print_status()
+    weevil_detection()
+    print_status()
+    weevil_attraction()
+    print_status()
+    weevil_elimination()
+    print_status()
+
+def stop_process():
+    input("Process stopped. Press Enter to continue...")
+    sys.exit()

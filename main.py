@@ -1,4 +1,6 @@
 # Imports
+import time
+import subprocess
 import functions as f
 
 API_URL = "https://calify.pythonanywhere.com/api"
@@ -9,14 +11,25 @@ def main():
     print("ID:", id)
 
     if f.is_registered(id):
-        print("The id is already registered")
+        print("The id is registered")
     else:
         print("The id is now registered")
 
-    f.update_operating(id, True)
-    print("Is operating?", f.is_operating(id))
-    f.update_status(id, 1)
-    print("Status:", f.check_status(id))
+    while(not f.is_operating(id)):
+        time.sleep(5)
+
+    process = subprocess.Popen(["python", "process.py"])
+
+    while(True):
+        if not f.is_operating(id):
+            break
+
+        time.sleep(5)
+    
+    process.terminate()
+    process.wait()
+    f.stop_process()
+        
 
 if __name__ == "__main__":
     main()
