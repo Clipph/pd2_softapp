@@ -8,6 +8,7 @@ import os
 import sys
 import time
 import detection
+import socket
 from gpiozero import LED
 
 API_URL = main.API_URL
