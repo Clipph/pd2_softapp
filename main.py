@@ -15,7 +15,7 @@ def main():
     else:
         print("The id is now registered")
 
-    while(not f.is_operating(id)):
+    while(not f.is_operating(id) and f.is_connected_to_internet()):
         time.sleep(5)
 
     process = subprocess.Popen(["python", "process.py"])

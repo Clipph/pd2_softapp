@@ -8,9 +8,13 @@ import os
 import sys
 import time
 import detection
+from gpiozero import LED
 
 API_URL = main.API_URL
 API_KEY = main.API_KEY
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+ID_FILE_PATH = os.path.join(SCRIPT_DIR, "id.txt")
 
 def random_id_generator(max_length=5):
     """
@@ -37,20 +41,10 @@ def get_id_from_file():
     """
 
     try:
-        with open("id.txt", "r") as f:
+        with open(ID_FILE_PATH, "r") as f:
             return f.read()
     except FileNotFoundError:
-        # If the random generator by chance generates an id that is already registered,
-        # it will keep generating until it finds an id that is not registered yet
-        while True:
-            id = random_id_generator()
-            response = api_call(method="GET", url=f"{API_URL}/device/{id}/", api_key=API_KEY)
-            if response.status_code == 404:
-                break
-        
-        with open("id.txt", "w") as f:
-            f.write(id)
-        return id
+        return None
     
 ID = get_id_from_file()
     
@@ -213,24 +207,37 @@ def weevil_detection():
 def weevil_attraction():
     print("Attracting rice weevils...")
     # Process here
-    time.sleep(10)
+    input()
     update_status(ID, 2)
 
 def weevil_elimination():
-    print("Eliminating rice weevils...")
+    print("Attracting and eliminating rice weevils...")
     # Process here
-    time.sleep(10)
+    input()
     update_status(ID, 3)
 
 def start_process():
+    led = LED(17)
+    led.on()
     print_status()
     weevil_detection()
     print_status()
-    weevil_attraction()
-    print_status()
+    # weevil_attraction()
+    # print_status()
     weevil_elimination()
     print_status()
+    led.off()
 
 def stop_process():
+    led =LED(17)
+    led.off()
     input("Process stopped. Press Enter to continue...")
     sys.exit()
+
+def is_connected_to_internet(host="8.8.8.8", port=53, timeout=3):
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except socket.error:
+        return False
