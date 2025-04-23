@@ -228,12 +228,12 @@ def start_process():
     weevil_elimination()
     print_status()
     led.off()
+    led.close()
 
 def stop_process():
     led =LED(17)
     led.off()
-    input("Process stopped. Press Enter to continue...")
-    sys.exit()
+    
 
 def is_connected_to_internet(host="8.8.8.8", port=53, timeout=3):
     try:

@@ -28,8 +28,8 @@ def main():
     
     process.terminate()
     process.wait()
-    f.stop_process()
         
 
 if __name__ == "__main__":
-    main()
+    while(True):
+        main()
