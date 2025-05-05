@@ -19,15 +19,15 @@ SEGMENT_LENGTH = 10     # Processed segment length
 N_MELS = 64
 FMAX = 4000
 TARGET_SIZE = (128, 128)
-MODEL_PATH = '/home/team46/rw_detector_10sec.h5'
+MODEL_PATH = '/home/team46/new_rw_detector_gain.h5'
 
 # Audio processing
 WEEVIL_LOWCUT = 93.75
-WEEVIL_HIGHCUT = 750
+WEEVIL_HIGHCUT = 2500
 FILTER_ORDER = 4
-GAIN_FACTOR = 5
+GAIN_FACTOR = 1000
 
-
+# led = LED(17)
 
 def butter_bandpass(lowcut, highcut, sr, order=4):
     nyquist = 0.5 * sr
@@ -71,26 +71,19 @@ def record_audio():
     last_10s = full_audio[start_index:]
     
     # Apply processing chain
-    amplified = apply_gain(last_10s, GAIN_FACTOR)
     filtered = bandpass_filter(
-        amplified,
+        last_10s,
         lowcut=WEEVIL_LOWCUT,
         highcut=WEEVIL_HIGHCUT,
         sr=SAMPLE_RATE,
         order=FILTER_ORDER
     )
-    return filtered
+    amplified = apply_gain(filtered, GAIN_FACTOR)
+    
+    return amplified
 
 def create_spectrogram(audio):
-    import matplotlib
-    matplotlib.use('Agg')  # Use non-GUI backend
-    import matplotlib.pyplot as plt
-    import librosa
-    import librosa.display
-    import numpy as np
-
-    plt.figure(figsize=(10, 4), frameon=False)
-
+    plt.figure(figsize=(10,4), frameon=False)
     S = librosa.feature.melspectrogram(
         y=audio,
         sr=SAMPLE_RATE,
@@ -108,19 +101,16 @@ def create_spectrogram(audio):
         y_axis='mel',
         fmax=FMAX
     )
-
+    
     plt.axis('off')
     plt.tight_layout(pad=0)
-
+    
     fig = plt.gcf()
     fig.canvas.draw()
-
     img = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
     img = img.reshape(fig.canvas.get_width_height()[::-1] + (3,))
-
     plt.close('all')
     return img
-
 
 def preprocess_image(img_array):
     img_array = tf.image.resize(img_array, TARGET_SIZE)
@@ -157,6 +147,8 @@ def detect_rice_weevil():
     while True:
         elapsed_total = time.time() - start_total
         if elapsed_total > max_duration:
+            # led.off()
+            # led.close()
             break
 
         audio = record_audio()
@@ -168,8 +160,10 @@ def detect_rice_weevil():
 
         if weevil_detected:
             weevil_count += 1
+            # led.on()
         else:
             clean_count += 1
+            # led.off()
 
         time.sleep(0.5)
 

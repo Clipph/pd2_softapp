@@ -205,7 +205,7 @@ def weevil_detection():
         update_status(ID, 4)
         
 
-def weevil_attraction():
+def weevil_attraction(): # not used
     print("Attracting rice weevils...")
     # Process here
     input()
@@ -214,28 +214,43 @@ def weevil_attraction():
 def weevil_elimination():
     print("Attracting and eliminating rice weevils...")
     # Process here
-    input()
-    update_status(ID, 3)
+    zapperPin = LED(5)
+    
+    try:
+        while(detection.detect_rice_weevil()):
+            zapperPin.on()
+            time.sleep(900) # every 15 mins
+        
+        update_status(ID, 3)
+    finally:
+        zapperPin.off()
+        zapperPin.close()
 
+# Elimination main process
 def start_process():
     led = LED(17)
-    led.on()
-    print_status()
-    weevil_detection()
-    print_status()
-    # weevil_attraction()
-    # print_status()
-    weevil_elimination()
-    print_status()
-    led.off()
-    led.close()
+    # Heater turns on too
+    
+    try:
+        led.on()
+        print_status()
+        
+        weevil_detection()
+        print_status()
+        
+        weevil_elimination()
+        print_status()
+        
+    finally:
+        led.off()
+        led.close()
 
-def stop_process():
+def stop_process(): # not used ? 
     led =LED(17)
     led.off()
     
 
-def is_connected_to_internet(host="8.8.8.8", port=53, timeout=3):
+def is_connected_to_internet(host="8.8.8.8", port=53, timeout=3): # not used
     try:
         socket.setdefaulttimeout(timeout)
         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))

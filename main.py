@@ -2,6 +2,7 @@
 import time
 import subprocess
 import functions as f
+import RPi.GPIO as GPIO
 import os
 
 API_URL = "https://calify.pythonanywhere.com/api"
@@ -21,7 +22,7 @@ def main():
     else:
         print("The id is now registered")
 
-    while(not f.is_operating(id) or not f.is_connected_to_internet()):
+    while(not f.is_operating(id)):
         time.sleep(5)
 
     process = subprocess.Popen([VENV_PATH, PROCESS_PATH])
